@@ -11,16 +11,16 @@ import {
   CardMedia,
   Alert
 } from '@mui/material';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 const MediaDetail = ({ user }) => {
   const { type, id } = useParams();
   const navigate     = useNavigate();
 
-  const [media,    setMedia]     = useState(null);
-  const [loading,  setLoading]   = useState(true);
-  const [error,    setError]     = useState('');
+  const [media,     setMedia]     = useState(null);
+  const [loading,   setLoading]   = useState(true);
+  const [error,     setError]     = useState('');
   const [favorited, setFavorited] = useState(false);
 
   // Fetch media details on mount
@@ -34,16 +34,6 @@ const MediaDetail = ({ user }) => {
       .catch(() => setError('Failed to load media details.'))
       .finally(() => setLoading(false));
   }, [type, id]);
-
-  useEffect(() => {
-    getFavorites()
-      .then(res => {
-        if (res.data.find(f => f.media_id === media.id.toString())) {
-          setFavorited(true);
-        }
-      })
-      .catch(() => {});
-  }, [media?.id]);
 
   // Download handler
   const handleDownload = async () => {
@@ -63,22 +53,11 @@ const MediaDetail = ({ user }) => {
       setError('Download failed.');
     }
   };
-<Button
-  variant={favorited ? 'outlined' : 'contained'}
-  color="secondary"
-  startIcon={favorited 
-     ? <FavoriteIcon/> 
-     : <FavoriteBorderIcon/>}
-  onClick={handleFavorite}
-  disabled={favorited}
->
-  {favorited ? 'Favorited' : 'Add to Favorites'}
-</Button>
 
   // Favorite handler
   const handleFavorite = async () => {
     if (!user) {
-      setError('Please log in to favorite.');
+      setError('Please log in to add favorites.');
       return;
     }
     try {
@@ -95,25 +74,29 @@ const MediaDetail = ({ user }) => {
     }
   };
 
-  if (loading) return (
-    <Container sx={{ py:4,textAlign:'center' }}>
-      <CircularProgress />
-    </Container>
-  );
+  if (loading) {
+    return (
+      <Container sx={{ py: 4, textAlign: 'center' }}>
+        <CircularProgress />
+      </Container>
+    );
+  }
 
-  if (error) return (
-    <Container sx={{ py:4 }}>
-      <Alert severity="error">{error}</Alert>
-      <Box mt={2}>
-        <Button variant="outlined" onClick={() => navigate(-1)}>
-          ← Back
-        </Button>
-      </Box>
-    </Container>
-  );
+  if (error) {
+    return (
+      <Container sx={{ py: 4 }}>
+        <Alert severity="error">{error}</Alert>
+        <Box mt={2}>
+          <Button variant="outlined" onClick={() => navigate(-1)}>
+            ← Back
+          </Button>
+        </Box>
+      </Container>
+    );
+  }
 
   return (
-    <Container sx={{ py:4 }}>
+    <Container sx={{ py: 4 }}>
       <Box mb={3}>
         <Button variant="outlined" onClick={() => navigate(-1)}>
           ← Back to results
@@ -130,11 +113,9 @@ const MediaDetail = ({ user }) => {
       )}
 
       <CardMedia
-        component={ type === 'audio' ? 'audio'
-                  : type === 'video' ? 'video'
-                  : 'img' }
+        component={type === 'audio' ? 'audio' : type === 'video' ? 'video' : 'img'}
         src={media.url}
-        controls={type!=='images'}
+        controls={type !== 'images'}
         alt={media.title}
         sx={{
           width: '100%',
@@ -151,7 +132,7 @@ const MediaDetail = ({ user }) => {
         <Button
           variant={favorited ? 'outlined' : 'contained'}
           color="secondary"
-          startIcon={ favorited ? <FavoriteIcon/> : <FavoriteBorderIcon/> }
+          startIcon={favorited ? <FavoriteIcon /> : <FavoriteBorderIcon />}
           onClick={handleFavorite}
         >
           {favorited ? 'Favorited' : 'Add to Favorites'}
